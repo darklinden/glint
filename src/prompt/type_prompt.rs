@@ -55,6 +55,21 @@ impl<'a> TypePrompt<'a> {
             .collect()
     }
 
+    fn filter_types_desc(&self) -> Vec<&str> {
+        self.config
+            .types_desc
+            .iter()
+            .map(|x| x.as_str())
+            .filter(|item| {
+                if self.input.is_empty() {
+                    true
+                } else {
+                    item.starts_with(&self.input)
+                }
+            })
+            .collect()
+    }
+
     pub fn run(mut self) -> TypePromptResult {
         let mut buffer = TermBuffer::new();
 
@@ -90,7 +105,9 @@ impl<'a> TypePrompt<'a> {
                     return TypePromptResult::Terminate;
                 }
                 Some((KeyCode::Enter, false, false, false)) => {
-                    return TypePromptResult::Type(self.get_at_selected_index().to_string());
+                    let type_ = self.get_at_selected_index().to_string();
+                    // log::info!("Type selected: {}", type_);
+                    return TypePromptResult::Type(type_);
                 }
                 Some((KeyCode::Char(c), false, _, false)) => {
                     self.input.push(c.to_ascii_lowercase());
@@ -116,7 +133,7 @@ impl<'a> TypePrompt<'a> {
                 _ => continue,
             };
 
-            let types = self.filter_types();
+            let types = self.filter_types_desc();
             if types.len() == 1 {
                 return TypePromptResult::Type(types[0].to_string());
             }

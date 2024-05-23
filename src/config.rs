@@ -4,6 +4,7 @@ use std::io;
 #[derive(Debug, Clone)]
 pub struct Config {
     pub types: Vec<String>,
+    pub types_desc: Vec<String>,
     pub figlet_file: Option<String>,
 }
 
@@ -20,19 +21,33 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             types: vec![
-                "build",
-                "ci",
+                "feat", 
+                "fix", 
+                "docs", 
+                "style", 
+                "refactor", 
+                "perf", 
+                "test", 
+                "build", 
+                "ci", 
                 "chore",
-                "docs",
-                "feat",
-                "fix",
-                "perf",
-                "refactor",
                 "revert",
-                "style",
-                "test",
-                "enhance",
-                "improvement",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect(),
+            types_desc: vec![
+                "✨ feat:\tA new feature",
+                "🐛 fix:\tA bug fix",
+                "📚 docs:\tDocumentation only changes",
+                "💎 style:\tChanges that do not affect the meaning of the code (white-space, formatting, etc)",
+                "📦 refactor:\tA code change that neither fixes a bug nor adds a feature",
+                "🚀 perf:\tA code change that improves performance",
+                "🚨 test:\tAdding missing tests or correcting existing tests",
+                "🛠  build:\tChanges that affect the build system or external dependencies',",
+                "🔫 ci:\tChanges to our CI configuration files and scripts'",
+                "📎 chore:\tOther changes that don't modify src or test files",
+                "🗑  revert:\tReverts a previous commit",
             ]
             .into_iter()
             .map(String::from)
