@@ -245,8 +245,9 @@ impl TermBuffer {
     }
 }
 
+#[allow(dead_code)]
 /// Represents internal state of TermBuffer
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct State {
     cursor: (u16, u16),
     rows: Vec<String>,
@@ -256,16 +257,6 @@ struct State {
 impl PartialEq for State {
     fn eq(&self, other: &Self) -> bool {
         self.cursor == other.cursor && self.rows == other.rows
-    }
-}
-
-impl Default for State {
-    fn default() -> Self {
-        State {
-            cursor: (0, 0),
-            rows: vec![],
-            first_row: 0,
-        }
     }
 }
 

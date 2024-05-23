@@ -3,9 +3,10 @@ use crate::TermBuffer;
 use crossterm::{
     self as ct,
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
-    style::{style, Color},
+    style::{style, Color, Stylize},
 };
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct ScopePrompt<'a> {
     config: &'a Config,
@@ -50,7 +51,12 @@ impl<'a> ScopePrompt<'a> {
                 None
             } else {
                 match event::read() {
-                    Ok(Event::Key(KeyEvent { code, modifiers })) => Some((
+                    Ok(Event::Key(KeyEvent {
+                        code,
+                        modifiers,
+                        kind: _,
+                        state: _,
+                    })) => Some((
                         code,
                         modifiers.contains(KeyModifiers::CONTROL),
                         modifiers.contains(KeyModifiers::SHIFT),
@@ -68,9 +74,7 @@ impl<'a> ScopePrompt<'a> {
                     self.finished = true;
                 }
                 Some((KeyCode::Char(c), false, _, false)) => {
-                    let accept = (c >= 'a' && c <= 'z')
-                        || (c >= 'A' && c <= 'Z')
-                        || (c >= '0' && c <= '9')
+                    let accept = c.is_ascii_alphanumeric()
                         || (c == '_')
                         || c == '-'
                         || c == '/'
@@ -114,7 +118,7 @@ impl<'a> ScopePrompt<'a> {
             let mut lines = figlet.create_vec();
 
             let mut cursor_x = 0;
-            cursor_x += figlet.write_to_buf_color(&self.ty, &mut lines[..], |s| {
+            cursor_x += figlet.write_to_buf_color(self.ty, &mut lines[..], |s| {
                 style(s).with(Color::Blue).to_string()
             });
 

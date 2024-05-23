@@ -4,7 +4,7 @@ use crate::Config;
 use crate::TermBuffer;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
-    style::{style, Color},
+    style::{style, Color, Stylize},
 };
 use std::iter;
 
@@ -54,7 +54,12 @@ impl<'a> FilesPrompt<'a> {
                 None
             } else {
                 match event::read() {
-                    Ok(Event::Key(KeyEvent { code, modifiers })) => Some((
+                    Ok(Event::Key(KeyEvent {
+                        code,
+                        modifiers,
+                        kind: _,
+                        state: _,
+                    })) => Some((
                         code,
                         modifiers.contains(KeyModifiers::CONTROL),
                         modifiers.contains(KeyModifiers::SHIFT),
@@ -150,7 +155,7 @@ impl<'a> FilesPrompt<'a> {
                 }
                 Some((KeyCode::Down, _, _, false)) => {
                     self.focused_index += 1;
-                    if self.focused_index >= take as u16 + 1 {
+                    if self.focused_index > take as u16 {
                         self.focused_index = take as u16;
                     }
                 }
@@ -196,7 +201,7 @@ impl<'a> FilesPrompt<'a> {
             let status_none = style(' ');
 
             for (i, git_status_item) in iter::once(&GitStatusItem::new("<all>".to_owned()))
-                .chain(self.options.iter().map(|item| item))
+                .chain(self.options.iter())
                 .enumerate()
                 .take(take + 1)
             {

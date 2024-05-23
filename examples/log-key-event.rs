@@ -23,6 +23,8 @@ fn main() {
             if let Event::Key(KeyEvent {
                 code: KeyCode::Char('c'),
                 modifiers,
+                kind: _,
+                state: _,
             }) = ev
             {
                 if modifiers.contains(KeyModifiers::CONTROL) {

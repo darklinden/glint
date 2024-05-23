@@ -114,7 +114,7 @@ impl Git {
         let proc = self.log(other_args).stdout(Stdio::piped()).spawn()?;
         let stdout = proc.stdout.expect("must be able to access stdout");
         Ok(parse_log::parse_logs(
-            BufReader::new(stdout).lines().filter_map(Result::ok),
+            BufReader::new(stdout).lines().map_while(Result::ok),
         ))
     }
 
@@ -234,16 +234,13 @@ impl Git {
 
         let items = BufReader::new(stdout)
             .lines()
-            .filter_map(|line| line.ok())
+            .map_while(Result::ok)
             .filter_map(|line| {
                 let mut chars = line.chars();
                 let staged = chars
                     .next()
                     .and_then(GitStatusType::from_char)
-                    .filter(|item| match item {
-                        GitStatusType::Untracked => false,
-                        _ => true,
-                    });
+                    .filter(|item| !matches!(item, GitStatusType::Untracked));
                 let unstaged = chars.next().and_then(GitStatusType::from_char);
 
                 chars.next();
@@ -306,15 +303,15 @@ impl GitStatusItem {
     }
 }
 
-impl Into<String> for GitStatusItem {
-    fn into(self) -> String {
-        (&self).into()
+impl From<GitStatusItem> for String {
+    fn from(val: GitStatusItem) -> Self {
+        (&val).into()
     }
 }
 
-impl Into<String> for &'_ GitStatusItem {
-    fn into(self) -> String {
-        self.file_name().into()
+impl From<&'_ GitStatusItem> for String {
+    fn from(val: &'_ GitStatusItem) -> Self {
+        val.file_name().into()
     }
 }
 

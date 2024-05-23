@@ -3,7 +3,7 @@ use crate::Config;
 use crate::TermBuffer;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
-    style::{style, Color},
+    style::{style, Color, Stylize},
 };
 
 #[derive(Debug)]
@@ -70,7 +70,12 @@ impl<'a> TypePrompt<'a> {
                 None
             } else {
                 match event::read() {
-                    Ok(Event::Key(KeyEvent { code, modifiers })) => Some((
+                    Ok(Event::Key(KeyEvent {
+                        code,
+                        modifiers,
+                        kind: _,
+                        state: _,
+                    })) => Some((
                         code,
                         modifiers.contains(KeyModifiers::CONTROL),
                         modifiers.contains(KeyModifiers::SHIFT),

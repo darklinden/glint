@@ -1,4 +1,4 @@
-use crossterm::style::{style, Color};
+use crossterm::style::{style, Color, Stylize};
 use glint::figlet;
 use std::fs::read_to_string;
 
