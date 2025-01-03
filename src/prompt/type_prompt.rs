@@ -88,14 +88,20 @@ impl<'a> TypePrompt<'a> {
                     Ok(Event::Key(KeyEvent {
                         code,
                         modifiers,
-                        kind: _,
+                        kind: event_kind,
                         state: _,
-                    })) => Some((
-                        code,
-                        modifiers.contains(KeyModifiers::CONTROL),
-                        modifiers.contains(KeyModifiers::SHIFT),
-                        modifiers.contains(KeyModifiers::ALT),
-                    )),
+                    })) => {
+                        if event_kind == event::KeyEventKind::Press {
+                            Some((
+                                code,
+                                modifiers.contains(KeyModifiers::CONTROL),
+                                modifiers.contains(KeyModifiers::SHIFT),
+                                modifiers.contains(KeyModifiers::ALT),
+                            ))
+                        } else {
+                            continue;
+                        }
+                    }
                     _ => continue,
                 }
             };
